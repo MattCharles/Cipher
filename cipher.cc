@@ -58,18 +58,27 @@ int main(int argc, char** argv){
 	if(encrypt_mode){
 		while(inFile.get(c)){
 			raw_char = c + codeword[char_num % codeword.length()];
-			//cout << "*** " << raw_char << " ***\n";
 			new_c = raw_char % alpha.size();
 			alpha[new_c] = alpha[new_c] + 1;
 			cout << new_c << "\n";
 			char_num++;
 			fputc(new_c, outFile);
 		}
-		fclose(outFile);
 
 		cout << "COUNTS:";
 		for(auto i : alpha){
 			cout << i.first << ": " << i.second << endl;
 		}
+	} else {
+		//TODO: implement decryption?
+		while(inFile.get(c)){
+			raw_char = c - codeword[char_num % codeword.length()];
+			new_c = raw_char % alpha.size();
+			alpha[new_c] = alpha[new_c] + 1;
+			cout << new_c << "\n";
+			char_num++;
+			fputc(new_c, outFile);
+		}
 	}
+	fclose(outFile);
 }
