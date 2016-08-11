@@ -6,8 +6,8 @@
 using namespace std;
 
 int main(int argc, char** argv){
-	unsigned int LOWEST_ASCII = 32;
-	unsigned int HIGHEST_ASCII = 126;
+	unsigned int LOWEST_ASCII = 0;
+	unsigned int HIGHEST_ASCII = 256;
 	//take an input file, an output file and a word
 
 	if(argc > 5 || argc < 3){
@@ -23,10 +23,6 @@ int main(int argc, char** argv){
 	char raw_char;
 	char new_c;
 	bool encrypt_mode;
-
-	for(int i = 0; i < argc; i++){
-		cout << argv[i] << "\n";
-	}
 
 	if(argc >= 4 && (strcmp("-d", argv[3]) == 0 || strcmp("-d", argv[4]) == 0)){					//decrypt mode
 		encrypt_mode = false;
@@ -58,7 +54,13 @@ int main(int argc, char** argv){
 	if(encrypt_mode){
 		while(inFile.get(c)){
 			raw_char = c + codeword[char_num % codeword.length()];
-			new_c = raw_char % alpha.size();
+			if(raw_char > HIGHEST_ASCII){
+				new_c = LOWEST_ASCII + (raw_char - HIGHEST_ASCII);
+			} else if(raw_char < LOWEST_ASCII){
+				new_c = HIGHEST_ASCII - (LOWEST_ASCII - raw_char);
+			} else {
+				new_c = raw_char;
+			}
 			alpha[new_c] = alpha[new_c] + 1;
 			cout << new_c << "\n";
 			char_num++;
@@ -70,15 +72,26 @@ int main(int argc, char** argv){
 			cout << i.first << ": " << i.second << endl;
 		}
 	} else {
-		//TODO: implement decryption?
 		while(inFile.get(c)){
 			raw_char = c - codeword[char_num % codeword.length()];
-			new_c = raw_char % alpha.size();
+			cout << raw_char;
+			if(raw_char > HIGHEST_ASCII){
+				new_c = LOWEST_ASCII + (raw_char - HIGHEST_ASCII);
+			} else if(raw_char < LOWEST_ASCII){
+				new_c = HIGHEST_ASCII - (LOWEST_ASCII - raw_char);
+			} else {
+				new_c = raw_char;
+			}
 			alpha[new_c] = alpha[new_c] + 1;
 			cout << new_c << "\n";
 			char_num++;
 			fputc(new_c, outFile);
 		}
+		cout << "COUNTS:";
+		for(auto i : alpha){
+			cout << i.first << ": " << i.second << endl;
+		}
 	}
+	//fclose(inFile);
 	fclose(outFile);
 }
